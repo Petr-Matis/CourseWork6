@@ -1,0 +1,89 @@
+{% load mailing_tag %}
+{% block content %}
+    <div class="pricing-header px-3 py-3 pt-md-2 pb-md-4 mx-auto text-center">
+
+        {% include 'mail_app/includes/messages.html' %}
+        <h1 class="display-4">{{ title }}</h1>
+        <p class="lead">{{ title }} сервис рассылок
+        </p>
+    </div>
+    <div class="card-body">
+        {#                    <form method="get">#}
+        {#                        <label for="status">Фильтр по статусу:</label>#}
+        {#                        {% csrf_token %}#}
+        {#                        {{ filter_form }}#}
+        {#                        <button type="submit">Применить</button>#}
+        {#                    </form>#}
+        <table class="table">
+            <thead>
+            <tr>
+
+                {% if user|is_moderator %}
+                    <th>Пользователь</th>
+                {% else %}
+                    <th>Клиент</th>
+                {% endif %}
+
+                <th>id Рассылки</th>
+                <th>Название</th>
+                <th>Статус рассылки</th>
+                <th>Начало рассылки</th>
+                <th>Конец рассылки</th>
+                <th>Периодичность рассылки</th>
+                <th>Логи отправки</th>
+                <th>
+                    {% if user|is_moderator %}
+                        Вкл/Выкл
+                    {% else %}
+                        Удаление
+                    {% endif %}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for mailing in mailing_list %}
+                <tr>
+                    {% if user|is_moderator %}
+                        <td>{{ mailing.owner.email }}</td>
+                    {% else %}
+                        <td><a href="{% url 'mail_app:mailing_upd' mailing.pk %}">{{ mailing.title }}</a></td>
+                    {% endif %}
+
+                    <td>{{ mailing.pk }}</td>
+                    <td>{{ mailing.title }}</td>
+                    <td>{{ mailing.get_mailing_status_display }}</td>
+                    <td>{{ mailing.mailing_start_time }}</td>
+                    <td>{{ mailing.mailing_end_time }}</td>
+                    <td>{{ mailing.get_mailing_period_display }}</td>
+                    <td><a href="{% url "mail_app:mailing_log" mailing.pk %}"
+                           class="btn btn-outline-primary">Логи</a></td>
+
+
+                    {% if user|is_moderator %}
+                        <td>
+                            <form method="post" action="{% url 'mail_app:update_status' mailing.pk %}">
+                                {% csrf_token %}
+                                {% if mailing.mailing_status == 'off' %}
+                                    <input type="hidden" name="new_status" value="created">
+                                    <button type="submit" class="btn btn-success">Включить</button>
+
+                                {% elif mailing.mailing_status != 'off' %}
+                                    <input type="hidden" name="new_status" value="off">
+                                    <button type="submit" class="btn btn-warning">Отключить</button>
+
+                                {% endif %}
+                            </form>
+                        </td>
+                    {% else %}
+                        <td><a href="{% url 'mail_app:mailing_del' mailing.pk %}" class="btn btn-danger">Удалить</a>
+                        </td>
+                    {% endif %}
+
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+

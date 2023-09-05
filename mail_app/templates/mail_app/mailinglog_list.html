@@ -1,0 +1,32 @@
+{% extends 'mail_app/base.html' %}
+
+{% load mailing_tag %}
+{% load static %}
+{% block content %}
+
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Почта клиента</th>
+                <th>ФИО клиента</th>
+                <th>Ответ сервера</th>
+                <th>Результат</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for log in mailing_log_list %}
+
+                <tr>
+                <td>{{ log.timestamp }}</td>
+                <td>{{ log.client.email }}</td>
+                <td>{{ log.client.name }}&nbsp{{ log.client.surname }}&nbsp {% if log.client.patronymic %}
+                    {{ log.client.patronymic }}{% endif %}</td>
+                <td>{{ log.server_response }}</td>
+                <td>{{ log.attempt_status }}</td>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

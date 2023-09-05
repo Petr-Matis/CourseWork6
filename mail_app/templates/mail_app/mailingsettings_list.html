@@ -1,0 +1,8 @@
+{% extends 'mail_app/base.html' %}
+{% load mailing_tag %}
+{% load static %}
+{% block content %}
+    {% include 'mail_app/mailing_setting.html' %}
+
+{% endblock %}
+{#{%  'mailing_service/mailingsettings_list.html' %}#}
